@@ -1,0 +1,92 @@
+
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/*menu*/
+html body{
+	
+	background-color: rgb(253, 253, 253);
+}
+header{
+	position: static absolute;
+	margin: 0px;
+	width: 100% 10%;
+}
+
+.menu{
+	margin-top: 15px;
+	position: center;	
+}
+
+.menu li{
+	display: inline;	
+}
+
+.btn{
+	background-color: rgb(0, 89, 255);
+	color: white;
+}
+
+.btn:hover{
+	
+
+	background-color: rgb(0, 89, 255);
+}
+
+/*end menu*/
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/*sideBar*/
+.sideBar{
+margin-top: 30px;
+background-color: rgb(0, 89, 255);
+float: right;
+width:300px;
+height:100%;
+
+
+}
+
+.sideBar h4{
+	color:white;
+	text-align: center;
+}
+
+
+/*end sideBar*/
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+
+
+.separator{
+  height: 30px;
+  width: 80%;
+  border: none;
+  box-shadow: none;
+  background-color:  rgb(0, 89, 255);
+  position: static absolute;
+float:left; 
+}
+
+.map{
+	position:fixed;
+	
+
+}
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/*footer*/
+.footer{
+   position:fixed;
+   left:0px;
+   bottom:0px;
+   height:50px;
+   width:100%;
+   background: rgb(0, 89, 255);
+
+}
+
+
+
+.footer h5{
+	color: white;
+}
+
+/*end footer*/
+/*/////////////////////////////////////////////////////////////////////////////////////////////////////////*/
