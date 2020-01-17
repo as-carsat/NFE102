@@ -17,7 +17,7 @@ creer une nouvelle base : test_nfe102 avec. encodage utf8-bin
 
 installer le script : e-commerce.sql
 
-déposer le dossier e-commerce dans : xampp/htdocs
+déposer le dossier NFE102-master dans : xampp/htdocs
 
 dans le navigateur entrer : localhost/NFE102-master
 
