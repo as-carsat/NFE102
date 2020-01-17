@@ -1,0 +1,24 @@
+# Projet_NFE102
+projet e-commerce php
+
+INSTALLER SERVEUR LOCAL :
+xampp-win32-5.6.36-0-VC11-installer.exe
+
+DEMARRER LES SERVEURS MYSQL ET APACHE
+
+DANS LE NAVIGATEUR ENTRER :  LOCALHOST/
+
+CLIQUER SUR PHPMYADMIN
+
+INSTALLER LA BASE DE DONNEES
+
+
+creer une nouvelle base : test_nfe102 avec. encodage utf8-bin
+
+installer le script : e-commerce.sql
+
+déposer le dossier e-commerce dans : xampp/htdocs
+
+dans le navigateur entrer : localhost/e-commerce
+
+enjoy!
