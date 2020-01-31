@@ -30,6 +30,7 @@ if(isset($_SESSION['username'])){
 			$stock = $_POST['stock'];
 			$title = $_POST['title'];
 			$description = $_POST['description'];
+			$description_court =substr($description,20);
 			$price = $_POST['price'];
 			$category=$_POST['category'];
 			$img=$_FILES['img']['name'];
@@ -71,6 +72,7 @@ if(isset($_SESSION['username'])){
 							}
 
 							imagejpeg($image_finale, 'img/'.$title.'.jpg');
+							$image_chemin = 'admin/img/'.$title.'.jpg';
 					}
 				}
 			}else{
@@ -79,9 +81,14 @@ if(isset($_SESSION['username'])){
 			}
 
 			if($title&&$description&&$price&&$stock){
+				$dateformat = date("Y-m-d H:i:s");
+				$dateformat_fin = date("Y-m-d H:i:s", strtotime('+1 year'));
 
 				$category=$_POST['category'];
+				$type_produit=$db->query("SELECT id_type_produit FROM type_produit WHERE libelle_type_produit='$category'");
+				$id_type_produit=$type_produit->fetch(PDO::FETCH_OBJ);
 
+/*
 				$weight=$_POST['weight'];
 
 				$select=$db->query("SELECT price FROM weights WHERE name='$weight'");
@@ -101,9 +108,16 @@ if(isset($_SESSION['username'])){
 				$tva = $s1 -> tva ;
 
 				$final_price = $final_price +($final_price * $tva/100) + $shipping;
+*/
+				//$insert = $db -> prepare("INSERT INTO product VALUES('','$title','$description','$price','$category','$weight', '$shipping','$tva', '$final_price', '$stock')");
+				
+				$insert_produit = $db -> prepare("INSERT INTO produits VALUES('','$id_type_produit->id_type_produit','$title','$dateformat','$category','$description_court','$description',0,'$image_chemin')");
+				$insert_produit->execute();
+				$id_produit=$db->query("SELECT id_produit FROM produits WHERE libelle_produit='$title' and id_type_produit='$id_type_produit->id_type_produit'");
+				$id__produit=$id_produit->fetch(PDO::FETCH_OBJ);
 
-				$insert = $db -> prepare("INSERT INTO product VALUES('','$title','$description','$price','$category','$weight', '$shipping','$tva', '$final_price', '$stock')");
-				$insert->execute();
+				$insert_prix = $db -> prepare("INSERT INTO prix VALUES('','$id__produit->id_produit','$price','$dateformat','$dateformat_fin','$dateformat',0)");
+				$insert_prix->execute();
 
 			}else{
 				echo 'veuillez remplir tout les champs!<br/>';
@@ -115,11 +129,11 @@ if(isset($_SESSION['username'])){
 
 <form action="" method="post" enctype="multipart/form-data">
 	<h3>Catégorie de produit :</h3><select name="category">
-		<?php $select=$db->query("SELECT * FROM category");
+		<?php $select=$db->query("SELECT * FROM type_produit");
 			while($s=$select->fetch(PDO::FETCH_OBJ)){
 		?>
 
-		<option><?php echo $s->name;?>
+		<option><?php echo $s->libelle_type_produit;?>
 
 		<?php
 			}
@@ -128,19 +142,20 @@ if(isset($_SESSION['username'])){
 	<h3>Nom du produit : <br/><input type="text" name="title"/></h3>
 	<h3>Description : <br/><textarea name="description"></textarea></h3>
 
-
+<!--
 	<h3>Poids moins de :<select name="weight">
-			<?php $select=$db->query("SELECT * FROM weights");
+			< ?php $select=$db->query("SELECT * FROM weights");
 			while($s=$select->fetch(PDO::FETCH_OBJ)){
 		?>
 
-		<option><?php echo $s->name;?></option>
+		<option>< ?php echo $s->name;?></option>
 
-		<?php
+		< ?php
 			}
 			?>
 
 	</select></h3>
+	-->
 	<h3>Prix : <br/><input type="text" name="price"/></h3>
 	<h3>Photo du produit :</h3>
 	<input type="file" name="img"/>

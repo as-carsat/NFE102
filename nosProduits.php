@@ -12,7 +12,7 @@ require_once ('include/sideBar.php');
 		$description_finale = wordwrap($description,35,'<br/>',false);
 
 
-		$prix_produit =$db->query("SELECT * FROM PRIX WHERE ID_PRODUIT = $s->id_type_produit");
+		$prix_produit =$db->query("SELECT * FROM PRIX WHERE ID_PRODUIT = $s->id_produit");
 		$prix_produit -> execute();
 		$prix = $prix_produit->fetch(PDO::FETCH_OBJ);
 		?>
@@ -38,7 +38,7 @@ require_once ('include/sideBar.php');
 		$select -> 	execute();
 
 		while($s=$select->fetch(PDO::FETCH_OBJ)){
-			$prix_produit =$db->query("SELECT * FROM PRIX WHERE ID_PRODUIT = $s->id_type_produit");
+			$prix_produit =$db->query("SELECT * FROM PRIX WHERE ID_PRODUIT = $s->id_produit");
 			$prix_produit -> execute();
 			$prix = $prix_produit->fetch(PDO::FETCH_OBJ);
 

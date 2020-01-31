@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le :  ven. 17 jan. 2020 à 21:00
+-- Généré le :  ven. 31 jan. 2020 à 23:54
 -- Version du serveur :  10.1.32-MariaDB
 -- Version de PHP :  5.6.36
 
@@ -21,6 +21,25 @@ SET time_zone = "+00:00";
 --
 -- Base de données :  `test_nfe102`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `administration`
+--
+
+CREATE TABLE `administration` (
+  `id_admin` int(10) NOT NULL,
+  `username` varchar(250) COLLATE utf8_bin NOT NULL,
+  `password` varchar(250) COLLATE utf8_bin NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Déchargement des données de la table `administration`
+--
+
+INSERT INTO `administration` (`id_admin`, `username`, `password`) VALUES
+(1, 'admin', 'admin');
 
 -- --------------------------------------------------------
 
@@ -188,7 +207,9 @@ CREATE TABLE `Prix` (
 
 INSERT INTO `Prix` (`id_prix`, `id_produit`, `prix`, `date_debut_validite`, `DATETIMEfin_validite`, `date_creation`, `isdeleted`) VALUES
 (1, 1, 25, '2020-01-01 00:00:00', '2020-01-31 00:00:00', '2020-01-09 00:00:00', 0),
-(2, 2, 30, '2020-01-01 00:00:00', '2020-01-31 00:00:00', '2020-01-09 00:00:00', 0);
+(2, 2, 30, '2020-01-01 00:00:00', '2020-01-31 00:00:00', '2020-01-09 00:00:00', 0),
+(3, 7, 380, '2020-01-31 23:42:44', '2021-01-31 23:42:44', '2020-01-31 23:42:44', 0),
+(4, 9, 235, '2020-01-31 23:48:52', '2021-01-31 23:48:52', '2020-01-31 23:48:52', 0);
 
 -- --------------------------------------------------------
 
@@ -214,7 +235,9 @@ CREATE TABLE `Produits` (
 
 INSERT INTO `Produits` (`id_produit`, `id_type_produit`, `libelle_produit`, `date_creation`, `titre_produit`, `libelle_court`, `libelle_long`, `isdeleted`, `chemin_photo`) VALUES
 (1, 1, 'samsung', '2019-12-03 00:00:00', 'telephone', 'sam', 'samsung', 0, 'admin/img/samsung.jpg'),
-(2, 2, 'msi', '2019-12-03 00:00:00', 'ordinateur portable', 'msi', 'msi xfr', 0, 'admin/img/msi.jpg');
+(2, 2, 'msi', '2019-12-03 00:00:00', 'ordinateur portable', 'msi', 'msi xfr', 0, 'admin/img/msi.jpg'),
+(7, 2, 'Lenovo10', '2020-01-31 23:42:07', 'informatique', '', 'pc de gamer Lenovo', 0, 'admin/img/Lenovo10.jpg'),
+(9, 1, 'humai', '2020-01-31 23:48:52', 'téléphonie', 'cher mais bien', 'humai telephone pas cher mais bien', 0, 'admin/img/humai.jpg');
 
 -- --------------------------------------------------------
 
@@ -266,6 +289,12 @@ INSERT INTO `Type_produit` (`id_type_produit`, `libelle_type_produit`, `date_cre
 --
 -- Index pour les tables déchargées
 --
+
+--
+-- Index pour la table `administration`
+--
+ALTER TABLE `administration`
+  ADD PRIMARY KEY (`id_admin`);
 
 --
 -- Index pour la table `Categorie`
@@ -362,6 +391,12 @@ ALTER TABLE `Type_produit`
 --
 
 --
+-- AUTO_INCREMENT pour la table `administration`
+--
+ALTER TABLE `administration`
+  MODIFY `id_admin` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT pour la table `Categorie`
 --
 ALTER TABLE `Categorie`
@@ -407,13 +442,13 @@ ALTER TABLE `Pays`
 -- AUTO_INCREMENT pour la table `Prix`
 --
 ALTER TABLE `Prix`
-  MODIFY `id_prix` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_prix` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `Produits`
 --
 ALTER TABLE `Produits`
-  MODIFY `id_produit` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_produit` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT pour la table `Type_mvt_produit`

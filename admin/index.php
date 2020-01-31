@@ -1,8 +1,9 @@
 
 <?php 
+include '../include/connection.php';
 
-session_start();
-
+if(!isset($_SESSION['username'])){
+/*
 $user='admin';
 $pass='1234';
 	if(isset($_POST['submit'])){
@@ -22,6 +23,42 @@ $pass='1234';
 	}
 	}
 	
+*/
+	if(isset($_POST['submit'])){
+
+		$username = $_POST['username'];
+		$password = $_POST['password'];
+	
+	
+		if($username&&$password){
+	
+			$select = $db->query("SELECT id_admin FROM administration WHERE username = '$username' && password='$password'");
+
+			if($select->fetchColumn()){
+				session_start();
+				$select -> 	execute();
+				$id = $select->fetch(PDO::FETCH_OBJ);
+				
+
+				$select = $db->query("SELECT * FROM administration WHERE id_admin = $id->id_admin");
+				$result = $select->fetch(PDO::FETCH_OBJ);
+				$_SESSION['id_admin']=$result->id_admin;
+				$_SESSION['username']=$result->username;
+				$_SESSION['password']=$result->password;
+	
+				header('Location: admin.php');
+	
+	
+			}else{
+	
+	
+				echo '<p style="color:red;">votre email ou votre de mot de passe est incorrect</p>';
+			}
+		}else{
+	
+			echo '<p style="color:red;">Veuillez remplir tout les champs</p>';
+		}
+	}
 ?>
 
 <!DOCTYPE html/> 
@@ -41,3 +78,9 @@ $pass='1234';
 </form>
 </body>
 </html>
+
+<?php
+
+}else{
+	header('Location: admin.php');
+}
