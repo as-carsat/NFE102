@@ -3,27 +3,7 @@
 include '../include/connection.php';
 
 if(!isset($_SESSION['username'])){
-/*
-$user='admin';
-$pass='1234';
-	if(isset($_POST['submit'])){
-		$username = $_POST['username'];
-		$password =$_POST['password'];
-	
-	
-	if($username&&$password){
-		if($username==$user&&$password==$pass){
-			$_SESSION['username']=$username;
-			header('location: admin.php');
-		}else{
-				echo 'identifiant incorrecte';
-			}
-	}else{
-		echo 'veuillez remplire tout les champs';
-	}
-	}
-	
-*/
+
 	if(isset($_POST['submit'])){
 
 		$username = $_POST['username'];
@@ -67,9 +47,14 @@ $pass='1234';
 	<meta charset="utf8">
 	<link href="css/style.css" type="text/css" rel="stylesheet"/>
 	<link href="css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
 
+<button type="button" class="btn btn-secondary" style="margin-right:0px;"><a href="../index.php">Boutique</a></button>
 <h1>Gestion du site</h1>
 <form action="" method="post">
 	<h3>Identifiant : <input type="text" name="username"/></h3><br>
