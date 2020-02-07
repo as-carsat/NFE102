@@ -72,19 +72,18 @@ if(!$erreur){
 ?>
 
 	<form method="post" action="">
-		<table widht="400">
+		<table class="table-striped" widht="400">
 
-			<tr>
-				<td colspan="4">Votre Panier</td>
-			</tr>
+		<thead>
 			<tr>
 				<td>Produit</td>
-				<td>Prix(100grs)</td>
+				<td>Prix</td>
 				<td>Quantitée</td>
 				<td>Tva</td>
 				<td>Supprimer article</td>
 			</tr>
-
+		</thead>
+		<tbody>
 			<?php
 
 				if(isset($_GET['deletePanier'])&& $_GET['deletePanier']==true){
@@ -103,7 +102,7 @@ if(!$erreur){
 				}else{
 
 					$total = montantTotal();
-					$totalTva = montantTotalTVA();
+					$totalHT = montantTotalHT();
 					$shipping = CalculFraisPorts();
 					$paypal = new Paypal();
 
@@ -111,10 +110,10 @@ if(!$erreur){
 							'RETURNURL' =>'http://127.0.0.1/e-commerce/process.php',
 							'CANCELURL' =>'http://127.0.0.1/e-commerce/cancel.php',
 
-							'PAYMENTREQUEST_0_AMT'=>$totalTva + $shipping,
+							'PAYMENTREQUEST_0_AMT'=>$totalHT + $shipping,
 							'PAYMENTREQUEST_0_CURRENCYCODE' => 'EUR',
 							'PAYMENTREQUEST_0_SHIPPINGAMT' => $shipping,
-							'PAYMENTREQUEST_0_ITEMAMT' => $totalTva
+							'PAYMENTREQUEST_0_ITEMAMT' => $totalHT
 					);
 
 					$response = $paypal->request('SetExpressCheckout', $params);
@@ -145,9 +144,10 @@ if(!$erreur){
 									<?php } ?>
 						<tr>
 							<td colspan="2"><br/>
-								<p>Total : <?php echo $total ?>€</p><br/>
-								<p>Total TTC : <?php echo $totalTva ?>€</p><br/>
-								<p>Calcul des frais de port : <?php echo $shipping ?>€</p>
+								<p>Total HT : <?php echo $totalHT ?>€</p><br/>
+								<p>Total TTC: <?php echo $total ?>€</p><br/>
+								
+								<!--<p>Calcul des frais de port : < ?php echo $shipping ?>€</p>-->
 
 							</td>
 						</tr>
@@ -168,6 +168,7 @@ if(!$erreur){
 			}
 
 			?>
+			</tbody>
 		</table>
 
 	</form>

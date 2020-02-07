@@ -1,13 +1,15 @@
 
 <?php
 include '../include/connection.php';
+include '../include/header_admin.php';
 if(isset($_SESSION['username'])){
 ?>
 
 <link href="css/style.css" type="text/css" rel="stylesheet"/>
 <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+<button type="button" class="btn btn-secondary" style="margin-right:0px;"><a href="disconnect.php">Déconnexion</a></button>
 
-<h1>Bienvenue, <?php echo $_SESSION['username'];?></h1>
+<h1>Bienvenue, <?php echo $_SESSION['username'];?></h1> 
 <br/>
 <a href="?action=add"><button>Ajouter produit</button></a>
 <a href="?action=modifyAndDelete"><button>Modif/Supp produit</button></a>
@@ -15,22 +17,21 @@ if(isset($_SESSION['username'])){
 <a href="?action=add_category"><button>Ajouter catégorie</button></a>
 <a href="?action=modifyAndDelete_category"><button>Modif/Supp catégorie</button></a>
 
-<a href="?action=options"><button>Options</button></a><br/>
+<a href="?action=clients"><button>Clients</button></a><br/>
 
 <?php
 
-/**/
-
 	if(isset($_GET['action'])){
-
+/* DEBUT CREATION PRODUIT */
 	if($_GET['action']=='add'){
 
 		if(isset($_POST['submit'])){
 
 			$stock = $_POST['stock'];
-			$title = $_POST['title'];
+			$libelle_produit = $_POST['libelle_produit'];
 			$description = $_POST['description'];
-			$price = $_POST['price'];
+			$description_court =substr($description,0,15).'...';
+			$prix = $_POST['prix'];
 			$category=$_POST['category'];
 			$img=$_FILES['img']['name'];
 
@@ -43,7 +44,7 @@ if(isset($_SESSION['username'])){
 				$image_ext = end($image);
 
 				if(in_array(strtolower($image_ext), array('png', 'jpg', 'jpeg'))===false){
-					echo 'Veuillez s�l�ctionner une image ayant pour extenson : png, jpg ou jpeg<br/>';
+					echo 'Veuillez séléctionner une image ayant pour extension : png, jpg ou jpeg<br/>';
 				}else{
 					$image_size = getimagesize($img_tmp);
 
@@ -70,40 +71,29 @@ if(isset($_SESSION['username'])){
 								imagecopyresampled($image_finale,$image_src,0,0,0,0,$new_width[0],$new_height[1],$image_size[0],$image_size[1]);
 							}
 
-							imagejpeg($image_finale, 'img/'.$title.'.jpg');
+							imagejpeg($image_finale, 'img/'.$libelle_produit.'.jpg');
+							$image_chemin = 'admin/img/'.$libelle_produit.'.jpg';
 					}
 				}
 			}else{
 
-				echo 'Veuillez s�l�ctionner une image<br/>';
+				echo 'Veuillez séléctionner une image<br/>';
 			}
 
-			if($title&&$description&&$price&&$stock){
+			if($libelle_produit&&$description&&$prix&&$stock){
+				$dateformat = date("Y-m-d H:i:s");
+				$dateformat_fin = date("Y-m-d H:i:s", strtotime('+1 year'));
 
 				$category=$_POST['category'];
+				$type_produit=$db->query("SELECT id_type_produit FROM type_produit WHERE libelle_type_produit='$category'");
+				$id_type_produit=$type_produit->fetch(PDO::FETCH_OBJ);
+				$insert_produit = $db -> prepare("INSERT INTO produits VALUES('','$id_type_produit->id_type_produit','$libelle_produit','$dateformat','$category','$description_court','$description',0,'$image_chemin')");
+				$insert_produit->execute();
+				$id_produit=$db->query("SELECT id_produit FROM produits WHERE libelle_produit='$libelle_produit' and id_type_produit='$id_type_produit->id_type_produit'");
+				$id__produit=$id_produit->fetch(PDO::FETCH_OBJ);
 
-				$weight=$_POST['weight'];
-
-				$select=$db->query("SELECT price FROM weights WHERE name='$weight'");
-
-				$s=$select->fetch(PDO::FETCH_OBJ);
-
-				$shipping = $s->price;
-
-				$old_price = $price;
-
-				$final_price = $old_price;
-
-				$select = $db->query("SELECT tva FROM product");
-
-				$s1 = $select->fetch(PDO::FETCH_OBJ);
-
-				$tva = $s1 -> tva ;
-
-				$final_price = $final_price +($final_price * $tva/100) + $shipping;
-
-				$insert = $db -> prepare("INSERT INTO product VALUES('','$title','$description','$price','$category','$weight', '$shipping','$tva', '$final_price', '$stock')");
-				$insert->execute();
+				$insert_prix = $db -> prepare("INSERT INTO prix VALUES('','$id__produit->id_produit','$prix','$dateformat','$dateformat_fin','$dateformat',0)");
+				$insert_prix->execute();
 
 			}else{
 				echo 'veuillez remplir tout les champs!<br/>';
@@ -115,33 +105,19 @@ if(isset($_SESSION['username'])){
 
 <form action="" method="post" enctype="multipart/form-data">
 	<h3>Catégorie de produit :</h3><select name="category">
-		<?php $select=$db->query("SELECT * FROM category");
+		<?php $select=$db->query("SELECT * FROM type_produit");
 			while($s=$select->fetch(PDO::FETCH_OBJ)){
 		?>
 
-		<option><?php echo $s->name;?>
+		<option><?php echo $s->libelle_type_produit;?>
 
 		<?php
 			}
 			?>
 	</select>
-	<h3>Nom du produit : <br/><input type="text" name="title"/></h3>
+	<h3>Nom du produit : <br/><input type="text" name="libelle_produit"/></h3>
 	<h3>Description : <br/><textarea name="description"></textarea></h3>
-
-
-	<h3>Poids moins de :<select name="weight">
-			<?php $select=$db->query("SELECT * FROM weights");
-			while($s=$select->fetch(PDO::FETCH_OBJ)){
-		?>
-
-		<option><?php echo $s->name;?></option>
-
-		<?php
-			}
-			?>
-
-	</select></h3>
-	<h3>Prix : <br/><input type="text" name="price"/></h3>
+	<h3>Prix : <br/><input type="text" name="prix"/></h3>
 	<h3>Photo du produit :</h3>
 	<input type="file" name="img"/>
 	<h3>Stock :<input type="text" name="stock"/></h3><br/><br/>
@@ -149,34 +125,74 @@ if(isset($_SESSION['username'])){
 	</form>
 <?php
 
-	}else if($_GET['action']=='modifyAndDelete'){
-		$select = $db -> prepare("SELECT * FROM product");
+	}
+	/* FIN CREATION PRODUIT */
+	/* DEBUT MODIFICATION PRODUIT */
+	else if($_GET['action']=='modifyAndDelete'){
+		$select = $db -> prepare("SELECT * FROM produits");
 		$select -> 	execute();
-
-		while($s=$select->fetch(PDO::FETCH_OBJ)){ //while is exist article
-			echo $s->title.'<br/>';
-
 		?>
-			<a href="?action=modify&amp;id=<?php echo $s->id; ?>">Modifier</a>
-			<a href="?action=delete&amp;id=<?php echo $s->id; ?>">X</a><br/><br/>
+		<table class="table">
+			<thead>
+			<tr>
+				<th>Photo</th>
+				<th>Libelle</th>
+				<th>Modification</th>
+				<th>Activation</th>
+				<th>Suppression</th>
+			</tr>
+			</thead>
+			<tbody>
 		<?php
-
+		while($s=$select->fetch(PDO::FETCH_OBJ)){ 
+			$chemin_photo=$s->chemin_photo;
+			$chemin_photo_adm=substr($chemin_photo,6);
+			?>
+			<tr>
+				<th><img src="<?php echo $chemin_photo_adm;?>"/></th>
+				<th><?php echo $s->libelle_produit;?></th>
+				<th><a href="?action=modify&amp;id=<?php echo $s->id_produit; ?>">Modifier</a></th>
+			<?php 
+			if($s->isdeleted == 0){
+			?>
+			<th><a href="?action=desactiver&amp;id=<?php echo $s->id_produit; ?>">Désactiver</a></th>
+			<?php
+			}else{
+			?>
+			<th><a href="?action=reactiver&amp;id=<?php echo $s->id_produit; ?>">Activer</a></th>
+			<?php
+			}
+			?>
+			<th><a href="?action=delete&amp;id=<?php echo $s->id_produit; ?>">X</a><br/><br/></th>
+		</tr>
+		<?php
 		}
-
+		?>
+		</tbody>
+		</table>
+		<?php
 	}else if($_GET['action']=='modify'){
 
 		$id = $_GET['id'];
 
-		$select = $db -> prepare("SELECT * FROM product WHERE id=$id");
+		$select = $db -> prepare("SELECT * FROM produits WHERE id_produit=$id");
 		$select -> 	execute();
-
 		$data = $select -> fetch (PDO::FETCH_OBJ);
+
+		$chemin_photo=$data->chemin_photo;
+		$chemin_photo_adm=substr($chemin_photo,6);
+
+		$select_prix = $db -> prepare("SELECT * FROM prix WHERE id_produit=$id");
+		$select_prix -> 	execute();
+		$data_prix = $select_prix -> fetch (PDO::FETCH_OBJ);
 		?>
 
 		<form action="" method="post">
-			<h3>Nom du produit : <br/><input value="<?php echo $data->title; ?>" type="text" name="title"/></h3>
-			<h3>Description : <br/><textarea name="description"><?php echo $data->description; ?></textarea></h3>
-			<h3>Prix : <br/><input value="<?php echo $data->price; ?>" type="text" name="price"/></h3>
+			<img src="<?php echo $chemin_photo_adm;?>"/>
+			<h3>Nom du produit : <br/><input value="<?php echo $data->libelle_produit; ?>" type="text" name="libelle_produit"/></h3>
+			<h3>Description : <br/><textarea name="libelle_long"><?php echo $data->libelle_long; ?></textarea></h3>
+			<h3>Description courte: <br/><textarea name="libelle_court"><?php echo $data->libelle_court; ?></textarea></h3>
+			<h3>Prix : <br/><input value="<?php echo $data_prix->prix; ?>" type="text" name="prix"/></h3>
 			<h3>Stock :<input type="text" name="stock"/></h3><br/><br/>
 			<input type="submit" name="submit" value="Modifier"/>
 		</form>
@@ -185,12 +201,17 @@ if(isset($_SESSION['username'])){
 		if(isset ($_POST['submit'])){
 
 			$stock=$_POST['stock'];
-			$title = $_POST['title'];
-			$description = $_POST['description'];
-			$price = $_POST['price'];
+			$libelle_produit = $_POST['libelle_produit'];
+			$description = $_POST['libelle_long'];
 
-			$update =$db->prepare("UPDATE product SET title='$title', description='$description', price='$price', stock='$stock' WHERE id=$id");
+			$description_courte =  $_POST['libelle_court'];
+
+			$prix = $_POST['prix'];
+			$update =$db->prepare("UPDATE produits SET libelle_produit='$libelle_produit', libelle_long='$description', libelle_court='$description_courte' WHERE id_produit=$id");
 			$update->execute();
+
+			$update_prix =$db->prepare("UPDATE prix SET prix='$prix' WHERE id_produit=$id");
+			$update_prix->execute();
 
 			header('Location: admin.php?action=modifyAndDelete');
 		}
@@ -200,23 +221,40 @@ if(isset($_SESSION['username'])){
 	}else if($_GET['action']=='delete'){
 
 		$id=$_GET['id'];
-		$delete = $db -> prepare("DELETE  FROM product WHERE id=$id");
-		$delete -> 	execute();
+
+		$delete_prix = $db -> prepare("DELETE  FROM prix WHERE id_produit=$id");
+		$delete_prix -> 	execute();
+		$delete_produit = $db -> prepare("DELETE  FROM produits WHERE id_produit=$id");
+		$delete_produit -> 	execute();
+	/*----------------------------------------------*/
+
+	}else if($_GET['action']=='desactiver'){
+
+		$id=$_GET['id'];
+		$update = $db -> prepare("UPDATE produits SET ISDELETED =1 WHERE id_produit=$id");
+		$update -> 	execute();
+	/*----------------------------------------------*/
+
+	}else if($_GET['action']=='reactiver'){
+
+		$id=$_GET['id'];
+		$update = $db -> prepare("UPDATE produits SET ISDELETED =0 WHERE id_produit=$id");
+		$update -> 	execute();
 	/*----------------------------------------------*/
 
 	}else if($_GET['action']=='add_category'){
-
+		$dateformat = date("Y-m-d H:i:s");
 		if(isset($_POST['submit'])){
 
 			$name=$_POST['name'];
 
 			if($name){
 
-				$insert = $db -> prepare("INSERT INTO category VALUES('','$name')");
+				$insert = $db -> prepare("INSERT INTO type_produit VALUES('','$name', '$dateformat',0)");
 				$insert->execute();
 	}else{
 
-		echo"Veuillez donner un nom a votre nouvelle cat�gorie de produit";
+		echo"Veuillez donner un nom a votre nouvelle catégorie de produit";
 	}
 		}
 
@@ -229,52 +267,55 @@ if(isset($_SESSION['username'])){
 
 	}else if($_GET['action']=='modifyAndDelete_category'){
 
-		$select = $db -> prepare("SELECT * FROM category");
+		$select = $db -> prepare("SELECT * FROM type_produit");
 		$select -> 	execute();
-
-		while($s=$select->fetch(PDO::FETCH_OBJ)){ //while is exist article
-			echo $s->name.'<br/>';
-
-			?>
-					<a href="?action=modify_category&amp;id=<?php echo $s->id; ?>">Modifier</a>
-					<a href="?action=delete_category&amp;id=<?php echo $s->id; ?>">X</a><br/><br/>
-				<?php
-
+		?>
+		<table class="table">
+		<thead>
+		<tr>
+			<th>Catégorie</th>
+			<th>Modification</th>
+			<th>Suppression</th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php
+		while($s=$select->fetch(PDO::FETCH_OBJ)){
+		?>	
+		<tr>
+			<th><?php echo $s->libelle_type_produit; ?></th>
+			<th><a href="?action=modify_category&amp;id=<?php echo $s->id_type_produit; ?>">Modifier</a></th>
+			<th><a href="?action=delete_category&amp;id=<?php echo $s->id_type_produit; ?>" onclick="alert('attention!')">X</a></th>
+		</tr>
+		<?php
 				}
-
+		?>
+		</tbody>
+		</table>
+		<?php
 
 				}else if($_GET['action']=='modify_category'){
 
 					$id = $_GET['id'];
-
-					$select = $db -> prepare("SELECT * FROM category WHERE id=$id");
+					$select = $db -> prepare("SELECT * FROM type_produit WHERE id_type_produit=$id");
 					$select -> 	execute();
-
 					$data = $select -> fetch (PDO::FETCH_OBJ);
 					?>
 
 						<form action="" method="post">
-							<h3>Nom de la catégorie : <br/><input value="<?php echo $data->name; ?>" type="text" name="title"/></h3>
+							<h3>Nom de la catégorie : <br/><input value="<?php echo $data->libelle_type_produit; ?>" type="text" name="libelle_produit"/></h3>
 							<input type="submit" name="submit" value="Modifier"/>
 						</form>
 						<?php
 
 						if(isset ($_POST['submit'])){
 
-							$title = $_POST['title'];
+							$libelle_produit = $_POST['libelle_produit'];
 							$description = $_POST['description'];
-							$price = $_POST['price'];
+							$prix = $_POST['prix'];
 
-							$update =$db->prepare("UPDATE category SET name='$title' WHERE id=$id");
+							$update =$db->prepare("UPDATE type_produit SET libelle_type_produit='$libelle_produit' WHERE id_type_produit=$id");
 							$update->execute();
-
-							$id = $_GET['id'];
-							$select= $db->query("SELECT name FROM category WHERE id='$id'");
-
-							$result= $select->fetch(PDO::FETCH_OBJ);
-
-							$update =$db->query("UPDATE product SET category='$title' WHERE category='$result->title'");
-
 							header('Location: admin.php?action=modifyAndDelete_category');
 						}
 
@@ -282,82 +323,52 @@ if(isset($_SESSION['username'])){
 
 
 					$id=$_GET['id'];
-					$delete = $db -> prepare("DELETE  FROM category WHERE id=$id");
-					$delete -> 	execute();
+					$select= $db->prepare("SELECT * FROM produits WHERE id_type_produit=$id");
+					$select->execute();
+					while($s=$select->fetch(PDO::FETCH_OBJ)){
 
+					$delete_prix = $db -> prepare("DELETE  FROM prix WHERE id_produit=$s->id_produit");
+					$delete_prix -> 	execute();
+					$delete_produit = $db -> prepare("DELETE  FROM produits WHERE id_type_produit=$id");
+					$delete_produit -> 	execute();
+					$delete = $db -> prepare("DELETE  FROM type_produit WHERE id_type_produit=$id");
+					$delete -> 	execute();
+					}
 					header('Location: admin.php?action=modifyAndDelete_category');
-	}else if($_GET['action']=='options'){
+	}else if($_GET['action']=='clients'){
 		?>
 
-		<h2>Frais de ports :</h2>
-		<h3>Options de poids (en grammes)</h3>
+		<h2>Liste des clients :</h2>          
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Prenom</th>
+		<th>Ville</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      
 		<?php
-	$select = $db->query("SELECT * FROM weights");
+	$select = $db->query("SELECT * FROM clients");
 
 	while ($s=$select->fetch(PDO::FETCH_OBJ)){
-
 		?>
-			<form action="" method="post">
-			<input type="text" name="weight" value="<?php echo $s->name; ?>"/>
-			<a href="?action=modify_weight&amp; name=<?php echo $s->name; ?>">Modifier</a>
-		</form>
+	  <tr>
+        <td><?php echo $s->nom; ?></td>
+        <td><?php echo $s->prenom; ?></td>
+        <td><?php echo $s->ville; ?></td>
+		<td><?php echo $s->email; ?></td>
+      </tr>
+      <tr>
 
 		<?php
 	}
-
-	$select=$db->query("SELECT tva FROM product");
-
-	$s = $select-> fetch(PDO::FETCH_OBJ);
-
-	if(isset($_POST['submit2'])){
-
-		$tva=$_POST['tva'];
-
-		if('$tva'){
-
-			$update = $db->query("UPDATE product SET tva = $tva");
-		}
-	}
 	?>
-
-		<h3>TVA :</h3>
-		<form action="" method="post"/>
-		<input type="text" name="tva" value="<?php echo $s->tva;?>"/>
-		<input type="submit" name="submit2" value="Modifier"/>
-		</form>
-
+	</tbody>
+	</table>
 	<?php
-	}else if($_GET['action']=='modify_weight'){
-
-		$old_weight=$_GET['name'];
-
-		$select = $db->query("SELECT * FROM weights WHERE name=$old_weight");
-		$s= $select->fetch(PDO::FETCH_OBJ);
-
-
-		if(isset($_POST['submit'])){
-
-			$weight=$_POST['weight'];
-			$price=$_POST['price'];
-			if($weight&&$price){
-
-				$update = $db->query("UPDATE weights SET name='$weight', price='$price' WHERE name=$old_weight");
-
-			}
-		}
-			?>
-
-				<h2>Frais de ports :</h2><br/>
-				<h3>Options de poids</h3>
-
-
-				<form action="" method="post">
-				<h3>Poids :<input type="text" name="weight" value="<?php echo $_GET['name'];?>"/>Grammes</h3>
-				<h3>Prix :<input type="text" name="price" value="<?php echo $s->price;?>"/> Euros</h3>
-				<input type="submit" name="submit" value="Modifier"/>
-				</form>
-				<?php
-
 	}else{
 		die('une erreur s\'est produite<br/>');
 	}

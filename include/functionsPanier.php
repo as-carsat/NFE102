@@ -18,7 +18,7 @@
 			
 			//$select=$db->query("SELECT tva FROM product");
 			//$data = $select->fetch(PDO::FETCH_OBJ);
-			$_SESSION['panier']['tva']=0;
+			$_SESSION['panier']['tva']=10;
 		}
 		
 		return true;
@@ -115,7 +115,7 @@
 	}
 	
 	
-	function montantTotalTVA(){
+	function montantTotalHT(){
 		
 		if(isset($_SESSION['panier'])){
 
@@ -128,7 +128,7 @@
 		
 
 		
-		return $total+ $total*$_SESSION['panier']['tva']/100;
+		return $total- $total*$_SESSION['panier']['tva']/100;
 		
 		}
 		else{
