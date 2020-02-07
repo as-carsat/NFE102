@@ -35,7 +35,7 @@ header{
 /*/////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 /*sideBar*/
 .sideBar{
-margin-top: 30px;
+border-top: 0px;
 background-color: rgb(0, 89, 255);
 float: right;
 width:300px;
@@ -86,6 +86,9 @@ float:left;
 
 .footer h5{
 	color: white;
+}
+#btn-deconnexion{
+	float: right;
 }
 
 /*end footer*/

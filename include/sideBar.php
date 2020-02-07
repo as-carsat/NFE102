@@ -12,7 +12,7 @@
 		$description = $s->libelle_court;
 		?>
 		
-		<div style="text-align:center">
+		<div style="text-align:center" id="sideBar">
 		<a href="?show=<?php  echo $s-> libelle_produit; ?>"><img src="<?php echo $s->chemin_photo;?>"/></a>
 		<h2 style="color: white"><?php echo $s->libelle_produit;?></h2>
 		<h5 style="color: white"><?php echo $description;?></h5>

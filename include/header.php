@@ -19,9 +19,11 @@ include 'connection.php';
 				<li><a href="register.php"><button class="btn btn-custom">Créer un compte</button></a></li>
 				<?php }else{?>
 				<li><a href="my_account.php"><button class="btn btn-custom">Mon compte</button></a></li>
+				<li><a href="disconnect.php"><button class="btn btn-custom" id="btn-deconnexion">Déconnexion</button></a>
 				<?php }?>
 
 				<li><a href="map.php"><button class="btn btn-custom">Nous Trouver</button></a></li>
+				
 			</ul>
 
 		</header>

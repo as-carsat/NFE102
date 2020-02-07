@@ -20,7 +20,7 @@ $select = $db->query("SELECT * FROM clients WHERE id_client = '$user_id'");
 		<header>
 
 			<ul class="menu">
-				<li><a href="disconnect.php"><button class="btn btn-custom">Déconnexion</button></a><h2 class="bjr">Bonjour, <?php echo $s->prenom; ?></h2></li>
+				<h2 class="bjr">Bonjour, <?php echo $s->prenom; ?></h2></li>
 
 			</ul>
 
@@ -30,6 +30,10 @@ $select = $db->query("SELECT * FROM clients WHERE id_client = '$user_id'");
 				<h2>Mon compte :</h2>
 				<h4>Votre email : <?php echo $s->email; ?></h4>
 				<h4>Votre Mot de passe : <?php echo $s->password; ?></h4>
+				<hr> 
+				<h2>Adresse de livraison :</h2> 
+				<h4><?php echo $s->adr1 ;echo " " ;echo $s->adr2; ?></h4> 
+				<h4><?php echo $s->cp; echo " " ; echo $s->ville; ?></h4> 
 				</div>
 				<br/>
 			<?php
